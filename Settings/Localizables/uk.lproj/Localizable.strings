@@ -1,0 +1,39 @@
+/* 
+  Localizable.strings
+  NextGoal
+
+  Created by Олександр Чижик on 24.10.2025.
+  
+*/
+
+// --- Settings Screen ---
+"settings_title" = "Налаштування";
+"settings_dark_mode" = "Темна тема";
+"settings_default_currency" = "Основна валюта";
+"settings_language" = "Мова";
+
+// --- Currency Picker Screen ---
+"currency_picker_title" = "Вибір валюти";
+
+// --- Tab Bar ---
+"tab_planner" = "Планер";
+"tab_map" = "Карта";
+"tab_insights" = "Аналітика";
+
+// --- Contribution Frequency ---
+"freq_daily" = "Щодня";
+"freq_weekly" = "Щотижня";
+"freq_monthly" = "Щомісяця";
+
+// --- Menu adding goal ---
+"add_goal_title" = "Додавання мети";
+"add_goal_name_title" = "Назва цілі";
+"add_goal_name_placeholder" = "Введіть назву цілі";
+"add_goal_desc_title" = "Опис цілі";
+"add_goal_desc_placeholder" = "Введіть опис цілі";
+"add_goal_total_amount_title" = "Сума цілі";
+"add_goal_currency_title" = "Вибір валюти";
+"add_goal_contribution_amount_title" = "Внесок поразу";
+"add_goal_frequency_title" = "Частота внеску";
+"add_goal_infobox_text" = "Дата досягнення мети буде розрахована
+автоматично на основі цільової суми та щоденних відкладень";

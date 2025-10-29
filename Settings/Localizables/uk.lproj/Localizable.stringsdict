@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>planner_subtitle</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>Немає цілей</string>
+			<key>one</key>
+			<string>У вас %d ціль</string>
+			<key>few</key>
+			<string>У вас %d цілі</string>
+			<key>many</key>
+			<string>У вас %d цілей</string>
+			<key>other</key>
+			<string>У вас %d цілей</string>
+		</dict>
+	</dict>
+	<key>time_days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d день</string>
+			<key>few</key>
+			<string>%d дні</string>
+			<key>many</key>
+			<string>%d днів</string>
+			<key>other</key>
+			<string>%d днів</string>
+		</dict>
+	</dict>
+	<key>time_weeks</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d тиждень</string>
+			<key>few</key>
+			<string>%d тижні</string>
+			<key>many</key>
+			<string>%d тижнів</string>
+			<key>other</key>
+			<string>%d тижнів</string>
+		</dict>
+	</dict>
+	<key>time_months</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d місяць</string>
+			<key>few</key>
+			<string>%d місяці</string>
+			<key>many</key>
+			<string>%d місяців</string>
+			<key>other</key>
+			<string>%d місяців</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

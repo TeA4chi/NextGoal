@@ -1,0 +1,39 @@
+/* 
+  Localizable.strings
+  NextGoal
+
+  Created by Олександр Чижик on 24.10.2025.
+  
+*/
+
+// --- Settings Screen ---
+"settings_title" = "Settings";
+"settings_dark_mode" = "Dark Mode";
+"settings_default_currency" = "Default Currency";
+"settings_language" = "Language";
+
+// --- Currency Picker Screen ---
+"currency_picker_title" = "Select Currency";
+
+// --- Tab Bar ---
+"tab_planner" = "Planner";
+"tab_map" = "Map";
+"tab_insights" = "Insights";
+
+// --- Contribution Frequency ---
+"freq_daily" = "Daily";
+"freq_weekly" = "Weekly";
+"freq_monthly" = "Monthly";
+
+// --- Menu adding goal ---
+"add_goal_title" = "Adding a goal";
+"add_goal_name_title" = "Goal Name";
+"add_goal_name_placeholder" = "Enter goal name";
+"add_goal_desc_title" = "Description of the goal";
+"add_goal_desc_placeholder" = "Enter description of the goal";
+"add_goal_total_amount_title" = "Sum of the goal";
+"add_goal_currency_title" = "Currency selection";
+"add_goal_contribution_amount_title" = "Contribution";
+"add_goal_frequency_title" = "Contribution frequency";
+"add_goal_infobox_text" = "The date of achievement of the goal will be calculated utomatically based on the target amount and contribution frequency";
+
