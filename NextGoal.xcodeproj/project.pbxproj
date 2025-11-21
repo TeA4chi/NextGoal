@@ -20,7 +20,12 @@
 		D94432062EB2B7670009A989 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92210CE2EABF922008BC8E1 /* String+Extension.swift */; };
 		D94432092EB2BCDF0009A989 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = D94432072EB2BCDF0009A989 /* Localizable.stringsdict */; };
 		D98FC2CC2EAF907200338096 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98FC2CB2EAF907200338096 /* AddGoalViewController.swift */; };
+		D999073E2ECDAA8C0070B06E /* GoalDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D999073D2ECDAA8C0070B06E /* GoalDetailViewController.swift */; };
 		D9CF91462EAF633D00E3D932 /* GoalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CF91452EAF633D00E3D932 /* GoalTableViewCell.swift */; };
+		D9F3C7232ECE65B70078E18F /* StatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F3C7222ECE65B70078E18F /* StatCard.swift */; };
+		D9F3C7252ECE65D20078E18F /* Contribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F3C7242ECE65D20078E18F /* Contribution.swift */; };
+		D9F3C7272ECE65D80078E18F /* ContributionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F3C7262ECE65D80078E18F /* ContributionCell.swift */; };
+		D9F3C7292ECE667B0078E18F /* AddContributionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F3C7282ECE667B0078E18F /* AddContributionViewController.swift */; };
 		D9FECA622EB1F7890021C5F8 /* CurrencyPickerViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FECA612EB1F7890021C5F8 /* CurrencyPickerViewViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,7 +46,12 @@
 		D94432082EB2BCDF0009A989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		D944320A2EB2BCE30009A989 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = uk; path = uk.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		D98FC2CB2EAF907200338096 /* AddGoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGoalViewController.swift; sourceTree = "<group>"; };
+		D999073D2ECDAA8C0070B06E /* GoalDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalDetailViewController.swift; sourceTree = "<group>"; };
 		D9CF91452EAF633D00E3D932 /* GoalTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTableViewCell.swift; sourceTree = "<group>"; };
+		D9F3C7222ECE65B70078E18F /* StatCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCard.swift; sourceTree = "<group>"; };
+		D9F3C7242ECE65D20078E18F /* Contribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contribution.swift; sourceTree = "<group>"; };
+		D9F3C7262ECE65D80078E18F /* ContributionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContributionCell.swift; sourceTree = "<group>"; };
+		D9F3C7282ECE667B0078E18F /* AddContributionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContributionViewController.swift; sourceTree = "<group>"; };
 		D9FECA612EB1F7890021C5F8 /* CurrencyPickerViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyPickerViewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,6 +93,11 @@
 				D912E6312EAD49FB0051E35C /* Goal.swift */,
 				D9CF91452EAF633D00E3D932 /* GoalTableViewCell.swift */,
 				D98FC2CB2EAF907200338096 /* AddGoalViewController.swift */,
+				D999073D2ECDAA8C0070B06E /* GoalDetailViewController.swift */,
+				D9F3C7222ECE65B70078E18F /* StatCard.swift */,
+				D9F3C7242ECE65D20078E18F /* Contribution.swift */,
+				D9F3C7262ECE65D80078E18F /* ContributionCell.swift */,
+				D9F3C7282ECE667B0078E18F /* AddContributionViewController.swift */,
 			);
 			path = Goal;
 			sourceTree = "<group>";
@@ -234,16 +249,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				D94432062EB2B7670009A989 /* String+Extension.swift in Sources */,
+				D9F3C7272ECE65D80078E18F /* ContributionCell.swift in Sources */,
 				D92210B12EABE5A7008BC8E1 /* SettingsViewController.swift in Sources */,
 				D92210C52EABE6FE008BC8E1 /* PlannerViewController.swift in Sources */,
 				D9CF91462EAF633D00E3D932 /* GoalTableViewCell.swift in Sources */,
 				D92210CD2EABF5C6008BC8E1 /* CurrencyViewController.swift in Sources */,
 				D9FECA622EB1F7890021C5F8 /* CurrencyPickerViewViewController.swift in Sources */,
+				D9F3C7232ECE65B70078E18F /* StatCard.swift in Sources */,
 				D912E6342EAD7BAB0051E35C /* PersistenceManager.swift in Sources */,
 				D92210CB2EABEADC008BC8E1 /* SettingsManager.swift in Sources */,
+				D9F3C7252ECE65D20078E18F /* Contribution.swift in Sources */,
 				D92210C72EABE70A008BC8E1 /* InsightsViewController.swift in Sources */,
 				D98FC2CC2EAF907200338096 /* AddGoalViewController.swift in Sources */,
 				D912E6322EAD49FB0051E35C /* Goal.swift in Sources */,
+				D999073E2ECDAA8C0070B06E /* GoalDetailViewController.swift in Sources */,
+				D9F3C7292ECE667B0078E18F /* AddContributionViewController.swift in Sources */,
 				D92210C92EABE711008BC8E1 /* MapViewController.swift in Sources */,
 				D90DD6F62EB01A4600056BA3 /* AddMenuViewController.swift in Sources */,
 			);
