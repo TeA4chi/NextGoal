@@ -132,14 +132,9 @@ class PlannerViewController: UIViewController, UITableViewDataSource, UITableVie
 	// MARK: - Helpers
 	
 	private func updateHeaderSubtitle() {
-			// ---- ВИПРАВЛЕННЯ ----
-			// Ми більше НЕ використовуємо ".localized()"
-			// Ми викликаємо NSLocalizedString напряму
-			let formatString = NSLocalizedString("planner_subtitle", comment: "Subtitle for goals count")
-			
-			// Ця функція тепер отримає правильний шаблон з .stringsdict
-			subtitleLabel.text = String.localizedStringWithFormat(formatString, goals.count)
-		}
+		let formatString = NSLocalizedString("planner_subtitle", comment: "Subtitle for goals count")
+		subtitleLabel.text = String.localizedStringWithFormat(formatString, goals.count)
+	}
 	
 	// MARK: - UITableViewDataSource
 	
@@ -160,8 +155,21 @@ class PlannerViewController: UIViewController, UITableViewDataSource, UITableVie
 	
 	// MARK: - UITableViewDelegate
 	
-	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		return 140 // Висота для кастомної комірки
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		//зняти виділення з комірки
+		tableView.deselectRow(at: indexPath, animated: true)
+		
+		//1. отримуємо ціль яку обрав юзер
+		let selectedGoal = goals[indexPath.row]
+		
+		//2. Створення екрану деталей — goal передаємо через init
+		let detailVC = GoalDetailViewController(goal: selectedGoal)
+		
+		// 3. Призначаємо делегата, щоб отримувати оновлення
+		detailVC.delegate = self
+		
+		// 4. Відкриваємо екран (push navigation)
+		navigationController?.pushViewController(detailVC, animated: true)
 	}
 
 } // <-- 2. ЦЕ КІНЕЦЬ КЛАСУ 'PlannerViewController'
@@ -177,7 +185,6 @@ class PlannerViewController: UIViewController, UITableViewDataSource, UITableVie
 extension PlannerViewController: AddGoalDelegate {
 	
 	func didCreateGoal(_ goal: Goal) {
-		// 🔍 ДОДАЙТЕ ЦІ ПРИНТИ:
 		print("🎯 didCreateGoal called!")
 		print("   Goal title: \(goal.title)")
 		print("   Days remaining: \(goal.daysRemaining)")
@@ -198,9 +205,7 @@ extension PlannerViewController: AddGoalDelegate {
 extension PlannerViewController: AddMenuDelegate {
 	
 	func didSelectAddGoal() {
-		// 1. Закриваємо поточне меню
 		dismiss(animated: true) {
-			// 2. І одразу після закриття показуємо екран 'AddGoal'
 			let addGoalVC = AddGoalViewController()
 			addGoalVC.delegate = self // 'self' вже є AddGoalDelegate
 			let navController = UINavigationController(rootViewController: addGoalVC)
@@ -209,10 +214,49 @@ extension PlannerViewController: AddMenuDelegate {
 	}
 	
 	func didSelectAddDebtor() {
-		// Ми обрали "Додати боржника" (поки що заглушка)
 		dismiss(animated: true) {
 			print("TODO: Implement 'Add Debtor' screen")
 			// Тут ми будемо показувати екран AddDebtorViewController
+		}
+	}
+	
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		return 160
+	}
+}
+
+// MARK: - GoalDetailDelegate
+extension PlannerViewController: GoalDetailDelegate {
+	
+	// Викликається, коли ми змінили текст або дату цілі і натиснули "Зберегти"
+	func didUpdateGoal(_ goal: Goal) {
+		// Шукаємо індекс цілі, яку змінили, за її ID
+		if let index = goals.firstIndex(where: { $0.id == goal.id }) {
+			// 1. Оновлюємо дані в масиві
+			goals[index] = goal
+			
+			// 2. Оновлюємо вигляд конкретної комірки (без повного перезавантаження таблиці)
+			tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+			
+			// P.S. Збереження в пам'ять відбудеться автоматично через didSet змінної 'goals'
+		}
+	}
+	
+	// Викликається, коли натиснули "Видалити" на екрані деталей
+	func didDeleteGoal(_ goal: Goal) {
+		// Шукаємо індекс цілі
+		if let index = goals.firstIndex(where: { $0.id == goal.id }) {
+			
+			// 1. Спочатку видаляємо з масиву даних (Model)
+			goals.remove(at: index)
+			
+			// 2. Потім видаляємо рядок з таблиці (View)
+			tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+			
+			// 3. Повертаємося назад до списку (закриваємо екран деталей)
+			navigationController?.popViewController(animated: true)
+			
+			// Збереження в пам'ять відбудеться автоматично через didSet
 		}
 	}
 }

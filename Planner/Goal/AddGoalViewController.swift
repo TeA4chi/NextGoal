@@ -1,14 +1,24 @@
+//
+//  AddGoalViewController.swift
+//  NextGoal
+//
+//  Created by Олександр Чижик on 24.10.2025.
+//
+
 import UIKit
 
-// 1. ДОДАЙТЕ ЦЕЙ ПРОТОКОЛ (ви його пропустили)
+// Оновлений протокол з підтримкою редагування
 protocol AddGoalDelegate: AnyObject {
 	func didCreateGoal(_ goal: Goal)
+	func didUpdateGoal(_ goal: Goal)
 }
 
-// 2. Оголошення класу
 class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPickerDelegate {
 
 	weak var delegate: AddGoalDelegate?
+	
+	// Змінна для збереження цілі, якщо ми в режимі редагування
+	private var goalToEdit: Goal?
 	
 	// MARK: - Data Properties
 	private var currentCurrency: String = "UAH"
@@ -31,14 +41,16 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 	private lazy var titleField: UIView = {
 		return createTextField(
 			title: "add_goal_name_title".localized(),
-			placeholder: "add_goal_name_placeholder".localized()
+			placeholder: "add_goal_name_placeholder".localized(),
+			tag: 1
 		)
 	}()
 	
 	private lazy var descriptionField: UIView = {
 		return createTextView(
 			title: "add_goal_desc_title".localized(),
-			placeholder: "add_goal_desc_placeholder".localized()
+			placeholder: "add_goal_desc_placeholder".localized(),
+			tag: 2
 		)
 	}()
 	
@@ -55,7 +67,8 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		let field = createTextField(
 			title: "add_goal_total_amount_title".localized(),
 			placeholder: "0",
-			keyboardType: .decimalPad
+			keyboardType: .decimalPad,
+			tag: 3
 		)
 		return field
 	}()
@@ -64,7 +77,8 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		let field = createTextField(
 			title: "add_goal_currency_title".localized(),
 			placeholder: currentCurrency, // Початкове значення
-			isButton: true
+			isButton: true,
+			tag: 4
 		)
 		field.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openCurrencyPicker)))
 		return field
@@ -83,7 +97,8 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		let field = createTextField(
 			title: "add_goal_contribution_amount_title".localized(),
 			placeholder: "0",
-			keyboardType: .decimalPad
+			keyboardType: .decimalPad,
+			tag: 5
 		)
 		return field
 	}()
@@ -135,6 +150,24 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		return view
 	}()
 
+	// MARK: - Init
+	
+	// Оновлений ініціалізатор, що приймає необов'язкову ціль для редагування
+	init(goalToEdit: Goal? = nil) {
+		self.goalToEdit = goalToEdit
+		super.init(nibName: nil, bundle: nil)
+		
+		// Якщо ми редагуємо, одразу підтягуємо налаштування
+		if let goal = goalToEdit {
+			self.currentCurrency = goal.currency
+			self.currentFrequency = goal.contributionFrequency
+		}
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
 	// MARK: - Lifecycle
 	
 	override func viewDidLoad() {
@@ -142,13 +175,24 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		
 		setupUI()
 		setupLayout()
+		prefillDataIfEditing() // Заповнюємо поля, якщо це редагування
+		
+		// Жест для закриття клавіатури
+		let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+		view.addGestureRecognizer(tap)
 	}
 	
 	// MARK: - Setup UI
 	
 	private func setupUI() {
 		view.backgroundColor = .systemGroupedBackground
-		title = "add_goal_title".localized()
+		
+		// Змінюємо заголовок залежно від режиму
+		if goalToEdit != nil {
+			title = "Редагування мети" // TODO: Локалізувати
+		} else {
+			title = "add_goal_title".localized()
+		}
 		
 		navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelTapped))
 		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveTapped))
@@ -175,8 +219,6 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		updateCurrencyField(text: currentCurrency)
 	}
 	
-	// MARK: - Setup Layout
-	
 	private func setupLayout() {
 		NSLayoutConstraint.activate([
 			scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -197,10 +239,45 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		])
 	}
 	
-	//
-	// 3. ВСІ ФУНКЦІЇ, ЩО ЙДУТЬ НИЖЧЕ, МАЮТЬ БУТИ
-	//    ВСЕРЕДИНІ КЛАСУ 'AddGoalViewController'
-	//
+	// MARK: - Prefill Data (Editing Mode)
+	
+	private func prefillDataIfEditing() {
+		guard let goal = goalToEdit else { return }
+		
+		// 1. Назва
+		if let textField = titleField.viewWithTag(1) as? UITextField {
+			textField.text = goal.title
+		}
+		
+		// 2. Опис
+		if let textView = descriptionField.viewWithTag(2) as? UITextView,
+		   let desc = goal.description, !desc.isEmpty {
+			textView.text = desc
+			textView.textColor = .label
+		}
+		
+		// Форматер для чисел (щоб не показувати 5000.0 як 5000)
+		let formatter = NumberFormatter()
+		formatter.minimumFractionDigits = 0
+		formatter.maximumFractionDigits = 2
+		
+		// 3. Загальна сума
+		if let textField = totalAmountField.viewWithTag(3) as? UITextField {
+			textField.text = formatter.string(from: NSNumber(value: goal.totalAmount))
+		}
+		
+		// 4. Сума внеску
+		if let textField = contributionAmountField.viewWithTag(5) as? UITextField {
+			textField.text = formatter.string(from: NSNumber(value: goal.contributionAmount))
+		}
+		
+		// 5. Частота
+		if let index = ContributionFrequency.allCases.firstIndex(of: goal.contributionFrequency) {
+			frequencyControl.selectedSegmentIndex = index
+		}
+		
+		// Валюта вже встановлена в init()
+	}
 	
 	// MARK: - Actions
 	
@@ -209,55 +286,69 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 	}
 	
 	@objc private func saveTapped() {
+		// Отримуємо дані з полів по тегам
 		guard let title = (titleField.viewWithTag(1) as? UITextField)?.text,
 			  let descriptionText = (descriptionField.viewWithTag(2) as? UITextView)?.text,
-			  let totalAmountText = (totalAmountField.viewWithTag(1) as? UITextField)?.text,
-			  let contributionAmountText = (contributionAmountField.viewWithTag(1) as? UITextField)?.text
+			  let totalAmountText = (totalAmountField.viewWithTag(3) as? UITextField)?.text,
+			  let contributionAmountText = (contributionAmountField.viewWithTag(5) as? UITextField)?.text
 		else {
 			showError(message: "error_unknown".localized())
 			return
 		}
 		
-		print("📝 Title: \(title)")
-		   print("💰 Total Amount Text: \(totalAmountText)")
-		   print("💵 Contribution Amount Text: \(contributionAmountText)")
-		   print("💱 Currency: \(currentCurrency)")
-		   print("📅 Frequency: \(currentFrequency)")
-		
+		// Конвертуємо числа (заміна коми на крапку)
 		let totalAmount = Double(totalAmountText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
 		let contributionAmount = Double(contributionAmountText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
 		
-		print("💰 Total Amount (Double): \(totalAmount)")
-			print("💵 Contribution Amount (Double): \(contributionAmount)")
-		
 		let finalDescription = (descriptionText.isEmpty || descriptionText == "add_goal_desc_placeholder".localized()) ? nil : descriptionText
 
-		let newGoal = Goal(title: title, description: finalDescription, currency: currentCurrency, totalAmount: totalAmount, contributionAmount: contributionAmount,
-		contributionFrequency: currentFrequency)
+		// --- ЛОГІКА ЗБЕРЕЖЕННЯ ---
 		
-		if let goal = newGoal {
-				print("✅ Goal created successfully!")
-				print("   Title: \(goal.title)")
-				print("   Total: \(goal.totalAmount)")
-				print("   Contribution: \(goal.contributionAmount)")
-				print("   Days remaining: \(goal.daysRemaining)")
-				print("   Formatted time: \(goal.formattedTimeRemaining)")
+		if let existingGoal = goalToEdit {
+			// 1. РЕДАГУВАННЯ
+			// Ми створюємо нову структуру Goal, але обов'язково передаємо старий ID, дату створення
+			// та переносимо історію внесків
+			
+			let updatedGoal = Goal(
+				id: existingGoal.id,         // <-- ВАЖЛИВО: Зберігаємо старий ID
+				title: title,
+				description: finalDescription,
+				currency: currentCurrency,
+				totalAmount: totalAmount,
+				contributionAmount: contributionAmount,
+				contributionFrequency: currentFrequency,
+				createdDate: existingGoal.createdDate // <-- ВАЖЛИВО: Зберігаємо дату створення
+			)
+			
+			if var finalGoal = updatedGoal {
+				// Відновлюємо історію
+				finalGoal.contributions = existingGoal.contributions
+				finalGoal.currentAmount = existingGoal.currentAmount
+				
+				delegate?.didUpdateGoal(finalGoal)
+				dismiss(animated: true)
 			} else {
-				print("❌ Goal is NIL!")
+				showError(message: "error_validation_failed".localized())
 			}
-		
-		guard newGoal != nil else {
-			showError(message: "error_validation_failed".localized())
-			return
+			
+		} else {
+			// 2. СТВОРЕННЯ НОВОЇ
+			let newGoal = Goal(
+				title: title,
+				description: finalDescription,
+				currency: currentCurrency,
+				totalAmount: totalAmount,
+				contributionAmount: contributionAmount,
+				contributionFrequency: currentFrequency
+			)
+			
+			if let goal = newGoal {
+				delegate?.didCreateGoal(goal)
+				dismiss(animated: true)
+			} else {
+				showError(message: "error_validation_failed".localized())
+			}
 		}
-		
-		guard let goal = newGoal else {
-			showError(message: "error_validation_failed".localized())
-			return
-		}
-		
-		delegate?.didCreateGoal(goal)
-		dismiss(animated: true, completion: nil)
 	}
 	
 	@objc private func frequencyChanged(_ sender: UISegmentedControl) {
@@ -270,6 +361,10 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		navigationController?.pushViewController(pickerVC, animated: true)
 	}
 	
+	@objc private func dismissKeyboard() {
+		view.endEditing(true)
+	}
+	
 	// MARK: - CurrencyPickerDelegate
 	
 	func didSelectCurrency(_ currency: String) {
@@ -280,9 +375,13 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 	// MARK: - Helpers
 	
 	private func updateCurrencyField(text: String) {
-		if let currencyLabel = currencyField.viewWithTag(1) as? UILabel {
+		if let currencyLabel = currencyField.viewWithTag(4) as? PaddedLabel {
 			currencyLabel.text = text
 			currencyLabel.textColor = .label
+		} else if let currencyLabel = currencyField.viewWithTag(4) as? UILabel {
+			 // Fallback if PaddedLabel casting fails or view structure differs slightly
+			 currencyLabel.text = text
+			 currencyLabel.textColor = .label
 		}
 	}
 	
@@ -309,7 +408,8 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		return container
 	}
 	
-	private func createTextField(title: String, placeholder: String, keyboardType: UIKeyboardType = .default, isButton: Bool = false) -> UIView {
+	// Додав параметр 'tag' для зручного доступу
+	private func createTextField(title: String, placeholder: String, keyboardType: UIKeyboardType = .default, isButton: Bool = false, tag: Int) -> UIView {
 		
 		let textField = UITextField()
 		textField.placeholder = placeholder
@@ -318,23 +418,12 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		textField.backgroundColor = .secondarySystemGroupedBackground
 		textField.borderStyle = .none
 		textField.layer.cornerRadius = 10
-		textField.tag = 1
+		textField.tag = tag // <-- Tag
 		
 		textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 0))
 		textField.leftViewMode = .always
 		
-		let buttonLabel = UILabel()
-		buttonLabel.text = placeholder
-		buttonLabel.font = .systemFont(ofSize: 16)
-		buttonLabel.textColor = .placeholderText
-		buttonLabel.backgroundColor = .secondarySystemGroupedBackground
-		buttonLabel.layer.cornerRadius = 10
-		buttonLabel.clipsToBounds = true
-		buttonLabel.isUserInteractionEnabled = true
-		buttonLabel.tag = 1
-		
-		// Відступ для тексту всередині UILabel (для кнопки)
-		// (Використовуємо кастомний клас з 'padding')
+		// Використовуємо PaddedLabel для кнопки валюти
 		let paddedLabel = PaddedLabel(with: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 30))
 		paddedLabel.text = placeholder
 		paddedLabel.font = .systemFont(ofSize: 16)
@@ -343,14 +432,14 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		paddedLabel.layer.cornerRadius = 10
 		paddedLabel.clipsToBounds = true
 		paddedLabel.isUserInteractionEnabled = true
-		paddedLabel.tag = 1
+		paddedLabel.tag = tag // <-- Tag
 		
 		let icon = UIImageView(image: UIImage(systemName: "chevron.right"))
 		icon.tintColor = .secondaryLabel
 		icon.translatesAutoresizingMaskIntoConstraints = false
 		
 		// Вирішуємо, чи це кнопка (PaddedLabel) чи звичайне поле (UITextField)
-		let fieldView = isButton ? paddedLabel : textField
+		let fieldView: UIView = isButton ? paddedLabel : textField
 		
 		fieldView.heightAnchor.constraint(equalToConstant: 48).isActive = true
 		
@@ -366,14 +455,14 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		return createTitledView(title: title, view: fieldView)
 	}
 	
-	private func createTextView(title: String, placeholder: String) -> UIView {
+	private func createTextView(title: String, placeholder: String, tag: Int) -> UIView {
 		let textView = UITextView()
 		textView.text = placeholder
 		textView.font = .systemFont(ofSize: 16)
 		textView.textColor = .placeholderText
 		textView.backgroundColor = .secondarySystemGroupedBackground
 		textView.layer.cornerRadius = 10
-		textView.tag = 2
+		textView.tag = tag // <-- Tag
 		textView.delegate = self
 		
 		textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 12, right: 8)
@@ -398,11 +487,11 @@ class AddGoalViewController: UIViewController, UITextViewDelegate, CurrencyPicke
 		}
 	}
 	
-} // <-- 4. ЦЕ ОСТАННЯ ДУЖКА КЛАСУ 'AddGoalViewController'
+}
 
+// MARK: - Helper Classes
 
-// 5. ДОПОМІЖНИЙ КЛАС ДЛЯ ПОЛЯ "ВАЛЮТА"
-// (Додайте цей клас в той самий файл, але ПОЗА межами 'AddGoalViewController')
+// Допоміжний клас для лейбла з відступами (використовується для кнопки валюти)
 private class PaddedLabel: UILabel {
 	private var padding: UIEdgeInsets
 

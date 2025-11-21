@@ -30,7 +30,16 @@ struct Goal: Codable {
 	var currentAmount: Double = 0.0
 	let contributionAmount: Double
 	let contributionFrequency: ContributionFrequency
+	let createdDate: Date  // Added this property
 
+	// Add the missing property
+	var contributions: [Contribution] = []
+	
+	// --- Add this computed property for remaining amount ---
+	var remainingAmount: Double {
+		totalAmount - currentAmount
+	}
+	
 	var equivalentDailyContribution: Double {
 		switch contributionFrequency {
 		case .daily: return contributionAmount
@@ -70,6 +79,17 @@ struct Goal: Codable {
 		}
 	}
 
+    // Add this mutating function for convenience (also required by your VC)
+    mutating func addContribution(_ contribution: Contribution) {
+        contributions.append(contribution)
+        currentAmount += contribution.amount
+    }
+
+    // Computed property for expected completion date
+    var expectedCompletionDate: Date {
+        Calendar.current.date(byAdding: .day, value: daysRemaining, to: createdDate) ?? createdDate
+    }
+
 	init?(
 		id: UUID = UUID(),
 		title: String,
@@ -77,7 +97,8 @@ struct Goal: Codable {
 		currency: String,
 		totalAmount: Double,
 		contributionAmount: Double,
-		contributionFrequency: ContributionFrequency
+		contributionFrequency: ContributionFrequency,
+		createdDate: Date = Date() // Added parameter with default value
 	) {
 		if title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return nil }
 		if totalAmount <= 0 || contributionAmount <= 0 { return nil }
@@ -89,6 +110,8 @@ struct Goal: Codable {
 		self.totalAmount = totalAmount
 		self.contributionAmount = contributionAmount
 		self.contributionFrequency = contributionFrequency
+		self.createdDate = createdDate
 		// dailyContribution видалено - воно не потрібне!
 	}
 }
+
